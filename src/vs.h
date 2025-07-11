@@ -24,23 +24,15 @@ class Visual {
             int debug;
         } User;
 
-        int init(Config config);
-        void close();
-        File make_file(std::string file_name, std::string extension, std::string buf, std::filesystem::path path);
-        File load_file(std::filesystem::path path);
-        void save_file(File file, std::filesystem::path path);
-        bool make_project_files();
-        bool load_project_files();
-        bool is_running();
-        void wait_event(Config config, MTY_EventFunc event);
-        void except(int err_code);
-
-    private:
-
         typedef enum Language {
             LANG_PYTHON,
         };
     
+        typedef enum File_Type {
+            PROJECT_TYPE,
+            CLASS_TYPE,
+        }
+
         typedef enum Platform {
             PLATFORM_ALL, // Portable code, non-platform dependent libraries
             PLATFORM_WINDOWS, 
@@ -58,6 +50,13 @@ class Visual {
             std::vector<Function>function_ptr;
         };
 
+        typedef struct Class {
+            std::vector<Vs_Node>vs_node;
+            std::vector<Vs_Struct>vs_struct;
+            std::vector<Variable>var;
+            std::vector<Function>function_ptr;
+        };
+
         typedef struct Project {
             std::string project_name;
             std::filesystem::path project_path;
@@ -65,6 +64,19 @@ class Visual {
             Platform platform;
             std::vector<File>files;
         };
+
+        int init(Config config);
+        void close();
+        File make_file(int id, std::string file_name, std::string extension, std::string buffe);
+        int save_file(std::string file_name, std::string extension, std::string buffer, std::filesystem::path path);
+        void load_file(int id, std::filesystem::path path, size_t size);
+        int make_project_files(std::string project_name, std::filesystem::path path);
+        int load_project_files();
+        bool is_running();
+        void wait_event(Config config, MTY_EventFunc event);
+        void except(int err_code);
+
+    private:
 
         void* opaque;
         MTY_App* app;

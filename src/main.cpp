@@ -35,26 +35,41 @@ int main(int argc, char* argv[]) {
 
     char user = *windows_user;
 
+    char* drive = getenv("SystemDrive");
+    
+    if(drive == NULL) {
+        return -1;
+    }
+
     Visual::User user_data;
     Config user_config;
     std::error_code ec;
     auto temp_folder = std::filesystem::temp_directory_path(ec);
+    
+    if(ec) {
+        return -1;
+    }
 
     bool is_binary_file = false;
     char file_argv = *"user.txt";
     char file_argv_2 = *"saved.txt";
-    char* path_user_folder = ("C:/Users/%s/AppData/Roaming/vs/", &user);
-    char* path_saved_folder = ("C:/Users/%s/Documents/vs-saved/", &user);
-    char* path_user_file_temp = ("C:/Users/%s/AppData/Roaming/Temp/%s", &user, &file_argv);
-    char* path_user_file = ("C:/Users/%s/AppData/Roaming/vs/%s", &user, &file_argv); 
-    char* path_saved_file = ("C:/Users/%s/Documents/vs-saved/%s", &user, &file_argv_2);
-    char* path_saved_file_temp = ("C:/Users/%s/AppData/Roaming/Temp/%s", &user, &file_argv_2);
+    char* path_user_folder = ("%s:/Users/%s/AppData/Roaming/vs/", &drive, &user);
+    char* path_saved_folder = ("%s:/Users/%s/Documents/vs-saved/", &drive, &user);
+    char* path_user_file_temp = ("%s:/Users/%s/AppData/Roaming/Temp/%s", &drive, &user, &file_argv);
+    char* path_user_file = ("%s:/Users/%s/AppData/Roaming/vs/%s", &drive, &user, &file_argv); 
+    char* path_saved_file = ("%s:/Users/%s/Documents/vs-saved/%s", &drive, &user, &file_argv_2);
+    char* path_saved_file_temp = ("%s:/Users/%s/AppData/Roaming/Temp/%s", &drive, &user, &file_argv_2);
     bool does_file_exist = true;
 
     std::ofstream user_file(path_user_file_temp);
     std::ofstream saved_file(path_saved_file_temp);
 
     char* error_creating_folder = "error while creating directory or it already exists";
+
+    if(!MTY_IsSupported()) {
+        printf("MTY is not supported");
+        return -1;
+    }
 
     if(!MTY_Mkdir(path_saved_folder)) {
         printf(error_creating_folder);
@@ -115,9 +130,15 @@ int main(int argc, char* argv[]) {
     
     Visual vs;
     
-    if(vs.init() == init_error) {
+    if(vs.init(user_config) == init_error) {
         return -1;
     }
+
+    // app = vs.init(user_config, app_fn, app_event); 
+
+    // if(app == NULL) {
+    //     return -1;
+    // }
 
     while(vs.is_running()) {
         // if(vs.is_project_loaded()) {

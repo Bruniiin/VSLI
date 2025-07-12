@@ -28,10 +28,11 @@ class Visual {
             LANG_PYTHON,
         };
     
-        typedef enum File_Type {
-            PROJECT_TYPE,
-            CLASS_TYPE,
-        }
+        typedef enum Type {
+            TYPE_PROJECT,
+            TYPE_CLASS,
+            TYPE_JSON,
+        };
 
         typedef enum Platform {
             PLATFORM_ALL, // Portable code, non-platform dependent libraries
@@ -39,22 +40,23 @@ class Visual {
         }; 
 
         typedef struct File {
-            std::filesystem::path file_path;
+            Type type; 
+            // std::filesystem::path file_path;
             char* file_name[64];
-            char* file_extension[4];
-            int file_size;
+            char* file_extension[8];
+            size_t data_size;
+            std::vector<int>vector_size_t;
             std::vector<unsigned char>file_data;
-            std::vector<Vs_Node>vs_node;
-            std::vector<Vs_Struct>vs_struct;
-            std::vector<Variable>var;
-            std::vector<Function>function_ptr;
         };
 
         typedef struct Class {
+            std::string class_name;
             std::vector<Vs_Node>vs_node;
             std::vector<Vs_Struct>vs_struct;
-            std::vector<Variable>var;
-            std::vector<Function>function_ptr;
+            std::vector<Variable, std::vector<int>>int_var;
+            std::vector<Variable, std::vector<float>>float_var;
+            std::vector<Variable, std::vector<double>>double_var;
+            std::vector<Function>function;
         };
 
         typedef struct Project {
@@ -67,14 +69,14 @@ class Visual {
 
         int init(Config config);
         void close();
-        File make_file(int id, std::string file_name, std::string extension, std::string buffe);
+        File make_file(int id, std::string file_name, std::string extension, std::string buffer);
         int save_file(std::string file_name, std::string extension, std::string buffer, std::filesystem::path path);
         void load_file(int id, std::filesystem::path path, size_t size);
         int make_project_files(std::string project_name, std::filesystem::path path);
-        int load_project_files();
+        int load_project_files(std::filesystem::path path);
         bool is_running();
         void wait_event(Config config, MTY_EventFunc event);
-        void except(int err_code);
+        void except(int error_code);
 
     private:
 
@@ -86,11 +88,13 @@ class Visual {
 
         Language lang;
         Platform platform;
-        // std::vector<Vs_Class>vs_class;
+        std::vector<Class>vs_class;
         std::vector<Vs_Node>vs_node;
         std::vector<Vs_Struct>vs_struct;
-        std::vector<Variable>var;
-        std::vector<Function>function_ptr;
+        std::vector<Variable, std::vector<int>>int_var;
+        std::vector<Variable, std::vector<float>>float_var;
+        std::vector<Variable, std::vector<double>>double_var;
+        std::vector<Function>function;
         std::vector<Includes>include;
         std::vector<File>open_files;
         std::vector<Project>project;

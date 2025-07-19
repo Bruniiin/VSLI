@@ -3,7 +3,7 @@
 #ifdef WINDOWS_64
 #include <windows.h>
 #endif
-#include "config.h"
+// #include "config.h"
 #include "nodes.h"
 #include "variable.h"
 #include "parser.h"
@@ -43,28 +43,32 @@ class Visual {
 
         typedef struct projectFile {
             Type type; 
-            // std::filesystem::path file_path;
             std::string file_name;
             std::string file_extension;
+            std::filesystem::path file_path;
         };
 
         typedef struct File { // : projectFile {
             uint32_t is_valid;
             Type type; 
-            // std::filesystem::path file_path;
             std::string file_name;
             std::string file_extension;
             size_t data_size;
-            // std::vector<int>vector_size_t;
             std::vector<std::string>file_data;
         };
         
         typedef struct Class {
             std::string class_name;
             std::vector<Vs_Node>vs_node;
-            std::vector<Vs_Struct>vs_struct;
+            std::vector<Connection>connection;
+            std::vector<Struct>vs_struct;
             std::vector<Variable>var;
             std::vector<Function>function;
+            std::vector<Variable, std::vector<int>>int_var;
+            std::vector<Variable, std::vector<float>>float_var;
+            std::vector<Variable, std::vector<double>>double_var;
+            std::vector<Variable, std::vector<char*>>char_var;
+            std::vector<Variable, std::vector<std::string>>string_var;            
         };
 
         typedef struct Project {
@@ -81,8 +85,8 @@ class Visual {
         void except(int error_code);
         bool is_running();
         
-        File make_file(Type id, std::string file_name, std::string extension, char* data, size_t* size);
-        File load_file(Type id, std::filesystem::path path, size_t* size);
+        File make_file(Type id, std::string file_name, std::string extension, char* data, int size);
+        File load_file(Type id, std::filesystem::path path, int size);
         int save_file(File file, std::filesystem::path path);
         int make_project_files(std::string project_name, std::filesystem::path path);
         int load_project_files(std::filesystem::path path);
@@ -95,7 +99,7 @@ class Visual {
     private:
         void* opaque;
         MTY_App *app;
-        MTY_App app_buf;
+        MTY_App *app_buf;
         MTY_AppFunc *app_fn;
         MTY_EventFunc *app_event;
 
@@ -109,6 +113,8 @@ class Visual {
         std::vector<Variable, std::vector<int>>int_var;
         std::vector<Variable, std::vector<float>>float_var;
         std::vector<Variable, std::vector<double>>double_var;
+        std::vector<Variable, std::vector<char*>>char_var;
+        std::vector<Variable, std::vector<std::string>>string_var;    
         std::vector<Function>function;
         std::vector<Includes>include;
         std::vector<File>open_files;

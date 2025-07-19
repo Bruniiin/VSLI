@@ -11,7 +11,11 @@ class Vs_Node {
         ~Vs_Node();
 
         typedef enum Node_Type {
-            VARIABLE,
+            BEGIN,
+            INT_VARIABLE,
+            FLOAT_VARIABLE, 
+            DOUBLE_VARIABLE,
+            STRING_VARIABLE,
             IF_STATEMENT, 
             FOR_LOOP,
             ASSIGNMENT,
@@ -25,7 +29,7 @@ class Vs_Node {
             SWITCH,
         };
 
-        int make_node(Node_Type *t, int x_pos, int y_pos, bool is_connected);
+        int make_node(Node_Type *t, int node_id, int x_pos, int y_pos, std::vector<Connection>connections);
         bool set_node_id(int id);
         int get_node_id();
         int place_node();
